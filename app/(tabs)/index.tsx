@@ -1,14 +1,45 @@
-import { StyleSheet, TextInput } from 'react-native';
+import { Button , StyleSheet, TextInput } from 'react-native';
 
 import EditScreenInfo from '../../components/EditScreenInfo';
 import { Text, View } from '../../components/Themed';
 import { useState } from 'react';
 import Colors from '../../constants/Colors';
-import { RadioButton } from 'react-native-paper';
+import {RadioButton } from 'react-native-paper';
 
 export default function TabOneScreen() {
-  const [text, onChangeText] = useState('Useless Text');
+  const [textAbout, onChangeText] = useState('Useless Text');
   const [checked, setChecked] = useState('first');
+  const [duracion, setDuracion] = useState("");
+  const [sector, setSector] = useState('productos');
+  const [name, setName] = useState('');
+  const promptText = 'create an small pitch for a bussiness whith the following information: \n\n';
+  const apiUrl = 'https://api.openai.com/v1/chat/completions';
+  const apiKey = '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';
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $OPENAI_API_KEY', // replace $OPENAI_API_KEY with your actual key
+        },
+        body: JSON.stringify({
+          "model": "gpt-3.5-turbo",
+          "messages": [{"role": "user", "content": "Say this is a test!"}],
+          "temperature": 0.7
+        }),
+      });
+      
+      const json = await response.json();
+
+      console.log(json); // do something with the response
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
 
   return (
     <View style={styles.container}>
@@ -20,7 +51,7 @@ export default function TabOneScreen() {
           <TextInput
             style={styles.input}
             onChangeText={onChangeText}
-            value={text}
+            value={textAbout}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -46,12 +77,12 @@ export default function TabOneScreen() {
             </View>
             <View style={styles.hContainer}>
               <Text style={styles.label}>adults</Text>
-              <RadioButton
-              color='#2e3440'
-                value="adults"
-                status={checked === 'adults' ? 'checked' : 'unchecked'}
-                onPress={() => setChecked('second')}
-              />
+                <RadioButton
+                color='#2e3440'
+                  value="adults"
+                  status={checked === 'adults' ? 'checked' : 'unchecked'}
+                  onPress={() => setChecked('second')}
+                />
             </View>
             <View style={styles.hContainer}>
               <Text style={styles.label}>all</Text>
@@ -65,22 +96,40 @@ export default function TabOneScreen() {
           </View>
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Label</Text>
+          <Text style={styles.label}>Duración en minutos</Text>
           <TextInput
             style={styles.input}
-            onChangeText={onChangeText}
-            value={text}
+            onChangeText={(texto) => setDuracion(texto)}
+            value={duracion}
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Label</Text>
+          <Text style={styles.label}>name your bussiness</Text>
           <TextInput
             style={styles.input}
-            onChangeText={onChangeText}
-            value={text}
+            onChangeText={setName}
+            value={name}
           />
         </View>
-      </View>
+
+        <Text style={styles.label}>Which sector is your bussiness</Text>
+                <RadioButton
+                color='#2e3440'
+                  value={sector}
+                  status={sector === 'services' ? 'checked' : 'unchecked'}
+                  onPress={() => setSector('products')}
+                />
+            </View>
+            <View style={styles.hContainer}>
+              <Text style={styles.label}>services</Text>
+              <RadioButton
+              color='#2e3440'
+              value={sector}
+                status={sector === 'products' ? 'checked' : 'unchecked'}
+                onPress={() => setSector('products')}
+              />
+            </View>
+            <Button title='Generate' onPress={() => fetchData()} />
     </View>
   );
 }
