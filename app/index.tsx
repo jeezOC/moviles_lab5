@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Button, StyleSheet, TextInput } from 'react-native';
-import { Text, View } from '../../components/Themed';
-import PublicRadioGroup from '../../components/PublicRadioGroup';
+import { Text, View } from '../components/Themed';
+import PublicRadioGroup from '../components/PublicRadioGroup';
 import SelectDropdown from 'react-native-select-dropdown'
 import { API_KEY, API_URL } from '@env';
-
+import { useRouter } from "expo-router";
 
 export default function TabOneScreen() {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [textAbout, onChangeText] = useState('Useless Text');
   const [publicMeta, setPublicMeta] = useState('everyone');
@@ -46,6 +47,7 @@ export default function TabOneScreen() {
       const json = await response.json();
       const generatedMessage = json.choices[0].message.content;
       console.log(generatedMessage);
+      router.push(`/modal/?generatedMessage=${generatedMessage}`);
     } catch (error) {
       console.error(error);
     }

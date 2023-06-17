@@ -3,8 +3,8 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import React,{ useEffect } from 'react';
-import { useColorScheme } from 'react-native';
-
+import { useColorScheme,Pressable } from 'react-native';
+import { Link, Tabs } from 'expo-router';
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -12,7 +12,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: 'index',
 };
 
 export default function RootLayout() {
@@ -30,21 +30,39 @@ export default function RootLayout() {
     <>
       {/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
       {!loaded && <SplashScreen />}
-      {loaded && <RootLayoutNav />}
+      {loaded && <RootLayoutNav children />}
     </>
   );
 }
 
-function RootLayoutNav() {
+function RootLayoutNav({children}:{children: React.ReactNode}) {
   const colorScheme = useColorScheme();
 
   return (
     <>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
-        </Stack>
+          <Stack.Screen name="index"  
+          options={{
+          title: 'Pitch Awesome',
+          headerRight: () => (
+            <Link href="/modal" asChild>
+              <Pressable>
+                {({ pressed }) => (
+                  <FontAwesome
+                    name="info-circle"
+                    size={25}
+                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
+            </Link>
+          )
+        }}
+         />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack> 
+
       </ThemeProvider>
     </>
   );
