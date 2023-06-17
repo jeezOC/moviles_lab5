@@ -5,6 +5,7 @@ import { Text, View } from '../../components/Themed';
 import { useState } from 'react';
 import Colors from '../../constants/Colors';
 import {RadioButton } from 'react-native-paper';
+import { API_KEY, API_URL } from '@env';
 
 export default function TabOneScreen() {
   const [textAbout, onChangeText] = useState('Useless Text');
@@ -13,27 +14,25 @@ export default function TabOneScreen() {
   const [sector, setSector] = useState('productos');
   const [name, setName] = useState('');
   const promptText = 'create an small pitch for a bussiness whith the following information: \n\n';
-  const apiUrl = 'https://api.openai.com/v1/chat/completions';
-  const apiKey = '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';
-
+  const apiUrl = API_URL;
   const fetchData = async () => {
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $OPENAI_API_KEY', // replace $OPENAI_API_KEY with your actual key
+          'Authorization': `Bearer ${API_KEY}`, // replace $OPENAI_API_KEY with your actual key
         },
         body: JSON.stringify({
           "model": "gpt-3.5-turbo",
-          "messages": [{"role": "user", "content": "Say this is a test!"}],
+          "messages": [{"role": "user", "content": `${promptText}`}],
           "temperature": 0.7
         }),
       });
       
       const json = await response.json();
-
-      console.log(json); // do something with the response
+      const generatedMessage = json.choices[0].message.content;
+      console.log(generatedMessage);
     } catch (error) {
       console.error(error);
     }
