@@ -60,7 +60,7 @@ function RootLayoutNav({children}:{children: React.ReactNode}) {
           )
         }}
          />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Pitch Awesome', }} />
         </Stack> 
 
       </ThemeProvider>

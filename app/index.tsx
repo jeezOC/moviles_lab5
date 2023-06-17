@@ -15,6 +15,7 @@ export default function TabOneScreen() {
   const [publicMeta, setPublicMeta] = useState('everyone');
   const [language, setLanguage] = useState("");
   const [sector, setSector] = useState('productos');
+  const [loading, setLoading] = useState(false);
   const promptText = `
   Genera un elevator pitch para compartir un breve resumen acerca de una nueva idea de negocio, Toma en consideracion las siguientes caracteristicas:
     - El nombre del negocio es ${name}  
@@ -32,6 +33,7 @@ export default function TabOneScreen() {
   `;
   const apiUrl = API_URL;
   const fetchData = async () => {
+    setLoading(prev => !prev)
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -50,6 +52,7 @@ export default function TabOneScreen() {
       const generatedMessage = json.choices[0].message.content;
       const encodedMessage = encodeURIComponent(generatedMessage);
       console.log(generatedMessage);
+      setLoading(prev => !prev)
       linkTo(`/modal/?generatedMessage=${encodedMessage}`);
 
     } catch (error) {
@@ -110,7 +113,7 @@ export default function TabOneScreen() {
       </View>
 
 
-      <Button title='Generate' onPress={() => fetchData()} />
+      <Button title={loading ?'Loading...': 'Generate'} disabled={loading} onPress={() => fetchData()} />
     </View>
   );
 }
