@@ -6,7 +6,7 @@ import { ExternalLink } from './ExternalLink';
 import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
 
-export default function EditScreenInfo({ path }: { path: string }) {
+export default function EditScreenInfo({ generatedMessage }: { generatedMessage: string }) {
   return (
     <View>
       <View style={styles.getStartedContainer}>
@@ -14,7 +14,7 @@ export default function EditScreenInfo({ path }: { path: string }) {
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
           darkColor="rgba(255,255,255,0.8)">
-          Pitch Generator
+          {generatedMessage}
         </Text>
       </View>
     </View>

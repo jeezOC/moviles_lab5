@@ -1,19 +1,32 @@
-import { Button , StyleSheet, TextInput } from 'react-native';
-
-import EditScreenInfo from '../../components/EditScreenInfo';
+import React, { useState } from 'react';
+import { Button, StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '../../components/Themed';
-import { useState } from 'react';
-import Colors from '../../constants/Colors';
-import {RadioButton } from 'react-native-paper';
+import PublicRadioGroup from '../../components/PublicRadioGroup';
+import SelectDropdown from 'react-native-select-dropdown'
 import { API_KEY, API_URL } from '@env';
 
+
 export default function TabOneScreen() {
-  const [textAbout, onChangeText] = useState('Useless Text');
-  const [checked, setChecked] = useState('first');
-  const [duracion, setDuracion] = useState("");
-  const [sector, setSector] = useState('productos');
   const [name, setName] = useState('');
-  const promptText = 'Cuenta un chiste: \n\n';
+  const [textAbout, onChangeText] = useState('Useless Text');
+  const [publicMeta, setPublicMeta] = useState('everyone');
+  const [language, setLanguage] = useState("");
+  const [sector, setSector] = useState('productos');
+  const promptText = `
+  Genera un elevator pitch para compartir un breve resumen acerca de una nueva idea de negocio, Toma en consideracion las siguientes caracteristicas:
+    - El nombre del negocio es ${name}  
+    - El negocio es sobre ${textAbout}
+    - El negocio va dirigido a ${publicMeta}
+    - El negocio esta ambientando en ${sector}
+    - El pitch debe ser en el idioma ${language}
+  Ademas el elevator pitch debe tener las siguientes secciones:
+    - Una breve presentacion personal
+    - Una breve presentacion del problema
+    - Presentacion de una solucion
+    - Una propuesta de valor
+    - Y un llamado a la accion
+  El discurso no deberia de durar mas de 30 segundos.
+  `;
   const apiUrl = API_URL;
   const fetchData = async () => {
     try {
@@ -25,11 +38,11 @@ export default function TabOneScreen() {
         },
         body: JSON.stringify({
           "model": "gpt-3.5-turbo",
-          "messages": [{"role": "user", "content": `${promptText}`}],
+          "messages": [{ "role": "user", "content": `${promptText}` }],
           "temperature": 0.7
         }),
       });
-      
+
       const json = await response.json();
       const generatedMessage = json.choices[0].message.content;
       console.log(generatedMessage);
@@ -39,12 +52,23 @@ export default function TabOneScreen() {
   };
 
 
-
+  const publicItems = ['kids', 'teenegers', 'adults', 'everyone'];
+  const sectorItems = ['services', 'products',]
+  const languageItems = ['Espanol', 'English', 'French', 'Dutch']
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Generate your Pitch</Text>
-      {/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
+      <Text style={styles.title}>Generate your Elevator Pitch</Text>
       <View style={styles.container}>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Name your bussiness</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setName}
+            value={name}
+          />
+        </View>
+
         <View style={styles.inputContainer}>
           <Text style={styles.label}>What is your bussiness about</Text>
           <TextInput
@@ -53,82 +77,34 @@ export default function TabOneScreen() {
             value={textAbout}
           />
         </View>
+
+        <PublicRadioGroup label={'Public Meta'} itemChecked={publicMeta} setItemChecked={setPublicMeta} items={publicItems} />
+        <PublicRadioGroup label={'Sector Bussiness'} itemChecked={sector} setItemChecked={setSector} items={sectorItems} />
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Public</Text>
-          <View style={{...styles.hContainer, width:'100%'}} >
-            <View style={styles.hContainer}>
-              <Text style={styles.label}>kids</Text>
-              <RadioButton
-                value="kids"
-                color='#2e3440'
-                status={checked === 'kids' ? 'checked' : 'unchecked'}
-                onPress={() => setChecked('first')}
-              />
-            </View>
-            <View style={styles.hContainer}>
-              <Text style={styles.label}>teenagers</Text>
-              <RadioButton
-              color='#2e3440'
-                value="teenagers"
-                status={checked === 'teenagers' ? 'checked' : 'unchecked'}
-                onPress={() => setChecked('second')}
-              />
-            </View>
-            <View style={styles.hContainer}>
-              <Text style={styles.label}>adults</Text>
-                <RadioButton
-                color='#2e3440'
-                  value="adults"
-                  status={checked === 'adults' ? 'checked' : 'unchecked'}
-                  onPress={() => setChecked('second')}
-                />
-            </View>
-            <View style={styles.hContainer}>
-              <Text style={styles.label}>all</Text>
-              <RadioButton
-              color='#2e3440'
-                value="all"
-                status={checked === 'all' ? 'checked' : 'unchecked'}
-                onPress={() => setChecked('second')}
-              />
-            </View>
+          <Text style={styles.label}>Select a language for your Pitch</Text>
+          <View style={{...styles.hContainer, width:'100%',}}>
+            <SelectDropdown
+              data={languageItems}
+              onSelect={(selectedItem, index) => {
+                setLanguage(selectedItem);
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                // text represented after item is selected
+                // if data array is an array of objects then return selectedItem.property to render after item is selected
+                return selectedItem
+              }}
+              rowTextForSelection={(item, index) => {
+                // text represented for each item in dropdown
+                // if data array is an array of objects then return item.property to represent item in dropdown
+                return item
+              }}
+            />
           </View>
         </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Duración en minutos</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(texto) => setDuracion(texto)}
-            value={duracion}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>name your bussiness</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setName}
-            value={name}
-          />
-        </View>
+      </View>
 
-        <Text style={styles.label}>Which sector is your bussiness</Text>
-                <RadioButton
-                color='#2e3440'
-                  value={sector}
-                  status={sector === 'services' ? 'checked' : 'unchecked'}
-                  onPress={() => setSector('products')}
-                />
-            </View>
-            <View style={styles.hContainer}>
-              <Text style={styles.label}>services</Text>
-              <RadioButton
-              color='#2e3440'
-              value={sector}
-                status={sector === 'products' ? 'checked' : 'unchecked'}
-                onPress={() => setSector('products')}
-              />
-            </View>
-            <Button title='Generate' onPress={() => fetchData()} />
+
+      <Button title='Generate' onPress={() => fetchData()} />
     </View>
   );
 }
@@ -175,7 +151,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    
+
   },
   input: {
     // height: '100%',
