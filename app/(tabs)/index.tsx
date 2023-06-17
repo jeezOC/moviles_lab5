@@ -13,7 +13,7 @@ export default function TabOneScreen() {
   const [duracion, setDuracion] = useState("");
   const [sector, setSector] = useState('productos');
   const [name, setName] = useState('');
-  const promptText = 'create an small pitch for a bussiness whith the following information: \n\n';
+  const promptText = 'Cuenta un chiste: \n\n';
   const apiUrl = API_URL;
   const fetchData = async () => {
     try {
