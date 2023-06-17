@@ -5,8 +5,10 @@ import PublicRadioGroup from '../components/PublicRadioGroup';
 import SelectDropdown from 'react-native-select-dropdown'
 import { API_KEY, API_URL } from '@env';
 import { useRouter } from "expo-router";
+import { useLinkTo } from '@react-navigation/native';
 
 export default function TabOneScreen() {
+  const linkTo = useLinkTo();
   const router = useRouter();
   const [name, setName] = useState('');
   const [textAbout, onChangeText] = useState('Useless Text');
@@ -46,8 +48,10 @@ export default function TabOneScreen() {
 
       const json = await response.json();
       const generatedMessage = json.choices[0].message.content;
+      const encodedMessage = encodeURIComponent(generatedMessage);
       console.log(generatedMessage);
-      router.push(`/modal/?generatedMessage=${generatedMessage}`);
+      linkTo(`/modal/?generatedMessage=${encodedMessage}`);
+
     } catch (error) {
       console.error(error);
     }
